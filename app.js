@@ -51,6 +51,11 @@ function firstRender(state) {
 }
 
 function secondRender(state) {
+	//Discuss as alt ways of storing our weather data
+		// const weatherData = state.weatherData;
+			// const copyData = Object.assign({}, state.weatherData);
+
+
 const highTemp = state.weatherData.main.temp_max;
 const lowTemp = state.weatherData.main.temp_min;
 const pressure = state.weatherData.main.pressure;
@@ -100,7 +105,9 @@ const windSpeed = state.weatherData.wind.speed;
     //.done will wait until $.getJSON for weather API is complete before running getGiphyData
     // $.getJSON(baseUrl, query, callback).done(getGiphyData(myCalculatedScore, callback));
     $.getJSON(baseUrl, query, callback)
-      // .done(functionhere);
+    // .done(functionhere);
+    // How to handle 404 error
+    	//    .fail(e => {console.log('AAAAAAA')})
   }
 
   function callbackJson(data) {
