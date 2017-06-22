@@ -55,7 +55,7 @@ const highTemp = state.weatherData.main.temp_max;
 const lowTemp = state.weatherData.main.temp_min;
 const pressure = state.weatherData.main.pressure;
 const latitude = state.weatherData.coord.lat;
-const longitute = state.weatherData.coord.lon;
+const longitude = state.weatherData.coord.lon;
 const sunriseTime = state.weatherData.sys.sunrise;
 const sunsetTime = state.weatherData.sys.sunset;
 const percentCloudCover = state.weatherData.clouds.all;
@@ -64,7 +64,15 @@ const windSpeed = state.weatherData.wind.speed;
 
 	let secondRenderTemplate = (`
 	<p>Today's high: ${highTemp}</p>
-	<p>Today's low: </p>
+	<p>Today's low: ${lowTemp}</p>
+  <p>Today's current pressure: ${pressure}</p>
+  <p>Latitude: ${latitude}</p>
+  <p>Longitude: ${longitude}</p>
+  <p>Today's sunrise time is: ${sunriseTime}</p>
+  <p>Today's sunset time is: ${sunsetTime}</p>
+  <p>Today's current % cloud cover is: ${percentCloudCover}</p>
+  <p>Today's current wind direction is: ${windDirection}</p>
+  <p>Today's current wind speed is: ${windSpeed}</p>
 		`)
 	$('.js-more-data').html(secondRenderTemplate);
 }
