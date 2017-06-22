@@ -18,7 +18,7 @@ let state = {
   }
 
   function tempConvert(state) {
-    state.weatherData.main.temp = (state.weatherData.main.temp - 273.15).toFixed(2);
+    state.weatherData.main.temp = ((9/5) * (state.weatherData.main.temp - 273.15) + 32).toFixed(2);
     state.weatherData.main.temp_max = (state.weatherData.main.temp_max - 273.15).toFixed(2);
     state.weatherData.main.temp_min = (state.weatherData.main.temp_min - 273.15).toFixed(2);
   }
@@ -36,6 +36,7 @@ let state = {
 // }
 
   // 2 renders needed per click
+
 function firstRender(state) {
 	const humidityData = state.weatherData.main.humidity;
 	const weatherDescription = state.weatherData.weather[0].description;
@@ -47,6 +48,25 @@ function firstRender(state) {
   `)
   $('.js-results').html(firstRenderTemplate);
   console.log(firstRenderTemplate);
+}
+
+function secondRender(state) {
+const highTemp = state.weatherData.main.temp_max;
+const lowTemp = state.weatherData.main.temp_min;
+const pressure = state.weatherData.main.pressure;
+const latitude = state.weatherData.coord.lat;
+const longitute = state.weatherData.coord.lon;
+const sunriseTime = state.weatherData.sys.sunrise;
+const sunsetTime = state.weatherData.sys.sunset;
+const percentCloudCover = state.weatherData.clouds.all;
+const windDirection = state.weatherData.wind.deg;
+const windSpeed = state.weatherData.wind.speed;
+
+	let secondRenderTemplate = (`
+	<p>Today's high: ${highTemp}</p>
+	<p>Today's low: </p>
+		`)
+	$('.js-more-data').html(secondRenderTemplate);
 }
     // html templates for both
 
@@ -72,7 +92,7 @@ function firstRender(state) {
     //.done will wait until $.getJSON for weather API is complete before running getGiphyData
     // $.getJSON(baseUrl, query, callback).done(getGiphyData(myCalculatedScore, callback));
     $.getJSON(baseUrl, query, callback)
-      .done(/*functionhere*/);
+      // .done(functionhere);
   }
 
   function callbackJson(data) {
@@ -80,7 +100,6 @@ function firstRender(state) {
     //some call of a rendering function
     tempConvert(state);
     firstRender(state);
-
   }
 
 
@@ -97,5 +116,11 @@ $('#js-form').submit(function(event){
   event.preventDefault();
   let cityName = $('#city').val();
   getApiData(cityName, callbackJson);
+  $('.js-more-data').removeClass('hidden');
 })
   //extra info click
+
+$('.more-button').on('click',function(event) {
+  event.preventDefault();
+  secondRender(state);
+});
