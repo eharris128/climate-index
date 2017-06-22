@@ -4,18 +4,28 @@
 
   // what state vars?
   // state structure?
-
+let state = {
+	weatherData: {},
+	showMoreInfo: false,
+}
 
 //------ ** state mod functions ** ----------|
 
   // store api data
-
+  function updatesStateWeatherData(data){
+  	state.weatherData = data;
+  	console.log(state.weatherData);
+  }
 
 //------ ** render functions ** ----------|
 
 
   // 2 renders needed per click
-
+  function firstRender(state) {
+  	console.log(state.weatherData.main.humidity);
+  	console.log(state.weatherData.weather[0].description);
+  	console.log(state.weatherData.main.temp);
+  }
     // html templates for both
 
 
@@ -29,23 +39,27 @@
   // API info conversion functions as needed
   //extra function defined to id non valid zips, calls error render
   // get weather api data function
-  function getWeatherApi(cityName, callback) {
+  function getApiData(cityName, callback) {
     const appKey = "0b0b48a8c8b04be0075e7d47726f1633"
-    const baseUrl = "api.openweathermap.org/data/2.5/weather"
+    const baseUrl = "http://api.openweathermap.org/data/2.5/weather"
     const query = {
       q: cityName,
       appID: appKey
 
     }
-    $.getJSON(baseUrl, query, callback);
+    //.done will wait until $.getJSON for weather API is complete before running getGiphyData
+    // $.getJSON(baseUrl, query, callback).done(getGiphyData(myCalculatedScore, callback));
+    $.getJSON(baseUrl, query, callback)
+      .done(/*functionhere*/);
   }
 
   function callbackJson(data) {
-    let response = [];
-    data.push(response);
-    console.log(response);
+    updatesStateWeatherData(data);
+    //some call of a rendering function
+    firstRender(state);
   }
 
+getApiData('London',callbackJson);
 
   // Const APP_KEY = 'mykey';
   // Const BASE_URL = 'https://api.weather.org/search'; (the base endpoint);

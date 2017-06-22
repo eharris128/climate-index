@@ -29,7 +29,7 @@ Open Questions:
 		- Which weather data set to start with?
 			- Expandable data table
 		- How to store user current location?
-			- localStorage : an object stored in cookies?
+			- localStorage : an object stored in cache?
 				- Look at history;
 	- How to hook up the GIPHY and weather?
 		- Create some number rating based on a number rated calculated off the weather data input
