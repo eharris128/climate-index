@@ -93,19 +93,10 @@ function windConversion(state) {
 
 
 function firstRender(state) {
-	const humidityData = state.weatherData.main.humidity;
-	const weatherDescription = state.weatherData.weather[0].description;
-  const currentTemp = state.weatherData.main.temp;
-  let firstRenderTemplate = (`
-  <h3>Current Temperature is: ${currentTemp}\&ordm F</h3>
-  <h4>Today's weather description is: "${weatherDescription}"</h4>
-  <h4>The Humidity is: ${humidityData}%</h4>
-  `)
-  $('.js-results').html(firstRenderTemplate);
-}
-
-function secondRender(state) {
 	const weatherData = state.weatherData;
+	const humidityData = weatherData.main.humidity;
+	const weatherDescription = weatherData.weather[0].description;
+  const currentTemp = weatherData.main.temp
 	const highTemp = weatherData.main.temp_max;
 	const lowTemp = weatherData.main.temp_min;
 	const pressure = weatherData.main.pressure;
@@ -113,15 +104,23 @@ function secondRender(state) {
 	const windDirection = windConversion(state);
 	const windSpeed = weatherData.wind.speed;
 
-	let secondRenderTemplate = (`
-		<p>Today's high: ${highTemp}\&ordm F</p>
-		<p>Today's low: ${lowTemp}\&ordm F</p>
-	  <p>Today's current pressure: ${pressure} mmHg</p>
-	  <p>Today's current % cloud cover is: ${percentCloudCover}%</p>
-	  <p>Today's current Cardinal wind direction is: ${windDirection}</p>
-	  <p>Today's current wind speed is: ${windSpeed}m/s</p>
-		`)
-	$('.js-more-data').html(secondRenderTemplate);
+  let firstRenderTemplate = (`
+	  <h3>Current Temperature is: ${currentTemp}\&ordm F</h3>
+	  <h4>Today's weather description is: "${weatherDescription}"</h4>
+	  <h4>The Humidity is: ${humidityData}%</h4>
+		<button class="more-button hidden" type="button">More Info</button>
+		<div class="js-more-data hidden">
+			<p>Today's high: ${highTemp}\&ordm F</p>
+			<p>Today's low: ${lowTemp}\&ordm F</p>
+			<p>Today's current pressure: ${pressure} mmHg</p>
+			<p>Today's current % cloud cover is: ${percentCloudCover}%</p>
+			<p>Today's current Cardinal wind direction is: ${windDirection}</p>
+			<p>Today's current wind speed is: ${windSpeed}m/s</p>
+		</div>
+  `)
+  $('.js-results').html(firstRenderTemplate);
+	$('.more-button').removeClass('hidden');
+
 }
 
 function errorRender(state) {
@@ -154,7 +153,7 @@ function getGIFData(callback){
 	 	api_key: appKey
 	 }
 	 $.getJSON(baseUrl, query, callback)
-}	
+}
 
 function getApiData(cityName, callback) {
   const appKey = "0b0b48a8c8b04be0075e7d47726f1633"
@@ -163,18 +162,19 @@ function getApiData(cityName, callback) {
     q: cityName,
     appID: appKey
 		}
-    //.done will wait until $.getJSON for weather API is complete before running getGiphyData
-    // $.getJSON(baseUrl, query, callback).done(getGiphyData(myCalculatedScore, callback));
+
   $.getJSON(baseUrl, query, callback)
     .done(getGIFData(callbackGIFJson))
 		.fail(e => {errorRender(state)})
-  }
+}
 
 function callbackJson(data) {
   updatesStateWeatherData(data);
-  //some call of a rendering function
+  console.log(data);
   unitConversion(state);
   firstRender(state);
+	// secondRender(state);
+	moreInfoListener();
 }
 
 function callbackGIFJson(data) {
@@ -184,7 +184,7 @@ function callbackGIFJson(data) {
 	rendersGif(state);
 }
 
-// gif api function
+// remove more info button after render
 // auto complete function
 // slides
 // style changes
@@ -194,16 +194,23 @@ function callbackGIFJson(data) {
 
 
 // search city submit functions
-$('#js-form').submit(function(event){
+// const submitCityListener = function(state){
+	$('#js-form').submit(function(event){
   event.preventDefault();
   let cityName = $('#city').val();
   getApiData(cityName, callbackJson);
-  $('.js-more-data').removeClass('hidden');
 	$('.js-error').addClass('hidden');
-});
+	});
+// }
 
 //extra info click
-$('.more-button').on('click',function(event) {
+const moreInfoListener = function(state) {
+	$('.more-button').on('click',function(event) {
   event.preventDefault();
-  secondRender(state);
-});
+	$('.js-more-data').removeClass('hidden');
+	});
+}
+//
+// $(function(){
+// 	submitCityListener();
+// });
