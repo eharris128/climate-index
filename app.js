@@ -4,6 +4,7 @@
 let state = {
 	weatherData: {},
 	showMoreInfo: false,
+	gifData: {}
 }
 
 
@@ -13,7 +14,10 @@ let state = {
   // store api data
 function updatesStateWeatherData(data){
 	state.weatherData = data;
-	console.log(state.weatherData);
+}
+
+function updatesStateGifData(data) {
+	state.gifData = data.data.image_original_url;
 }
 
 function unitConversion(state) {
@@ -98,7 +102,6 @@ function firstRender(state) {
   <h4>The Humidity is: ${humidityData}%</h4>
   `)
   $('.js-results').html(firstRenderTemplate);
-  console.log(firstRenderTemplate);
 }
 
 function secondRender(state) {
@@ -132,9 +135,26 @@ function errorRender(state) {
 	$('.js-more-data').addClass('hidden');
 }
 
+function rendersGif (state) {
+	const gif = state.gifData;
+	let gifRenderTemplate = (`
+		<img src=${gif}>
+		`)
+	$('.js-gif').html(gifRenderTemplate);
+}
 
 //------ ** functions to write ** ----------|
-
+//gifData.images.fixed_height.url = > should give us .gif
+	// chooce images.ourpreferredsizeimage
+function getGIFData(callback){
+	 const appKey = '6cb3b870c31b4846b6b714316ea2639e';
+	 const baseUrl = 'http://api.giphy.com/v1/gifs/random';
+	 const query = {
+	 	tag: 'weatherman',
+	 	api_key: appKey
+	 }
+	 $.getJSON(baseUrl, query, callback)
+}	
 
 function getApiData(cityName, callback) {
   const appKey = "0b0b48a8c8b04be0075e7d47726f1633"
@@ -146,9 +166,9 @@ function getApiData(cityName, callback) {
     //.done will wait until $.getJSON for weather API is complete before running getGiphyData
     // $.getJSON(baseUrl, query, callback).done(getGiphyData(myCalculatedScore, callback));
   $.getJSON(baseUrl, query, callback)
+    .done(getGIFData(callbackGIFJson))
 		.fail(e => {errorRender(state)})
-    // .done(functionhere);
-}
+  }
 
 function callbackJson(data) {
   updatesStateWeatherData(data);
@@ -157,6 +177,12 @@ function callbackJson(data) {
   firstRender(state);
 }
 
+function callbackGIFJson(data) {
+	// update state
+	updatesStateGifData(data);
+	// render gif to DOM
+	rendersGif(state);
+}
 
 // gif api function
 // auto complete function
@@ -174,7 +200,7 @@ $('#js-form').submit(function(event){
   getApiData(cityName, callbackJson);
   $('.js-more-data').removeClass('hidden');
 	$('.js-error').addClass('hidden');
-})
+});
 
 //extra info click
 $('.more-button').on('click',function(event) {
