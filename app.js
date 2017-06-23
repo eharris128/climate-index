@@ -17,6 +17,7 @@ function updatesStateWeatherData(data){
 }
 
 function updatesStateGifData(data) {
+	// chooce images.ourpreferredsizeimage
 	state.gifData = data.data.image_original_url;
 }
 
@@ -143,8 +144,6 @@ function rendersGif (state) {
 }
 
 //------ ** functions to write ** ----------|
-//gifData.images.fixed_height.url = > should give us .gif
-	// chooce images.ourpreferredsizeimage
 function getGIFData(callback){
 	 const appKey = '6cb3b870c31b4846b6b714316ea2639e';
 	 const baseUrl = 'http://api.giphy.com/v1/gifs/random';
@@ -184,8 +183,8 @@ function callbackGIFJson(data) {
 	rendersGif(state);
 }
 
-// remove more info button after render
 // auto complete function
+// refactor state name to initial state
 // slides
 // style changes
 
@@ -194,23 +193,24 @@ function callbackGIFJson(data) {
 
 
 // search city submit functions
-// const submitCityListener = function(state){
+const submitCityListener = function(state){
 	$('#js-form').submit(function(event){
   event.preventDefault();
   let cityName = $('#city').val();
   getApiData(cityName, callbackJson);
 	$('.js-error').addClass('hidden');
 	});
-// }
+}
 
 //extra info click
 const moreInfoListener = function(state) {
 	$('.more-button').on('click',function(event) {
   event.preventDefault();
 	$('.js-more-data').removeClass('hidden');
+	$('.more-button').addClass('hidden');
 	});
 }
-//
-// $(function(){
-// 	submitCityListener();
-// });
+
+$(function(){
+	submitCityListener();
+});
