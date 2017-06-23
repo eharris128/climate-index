@@ -1,7 +1,7 @@
 //------ ** define state! ** ----------|
 
 
-let state = {
+let initialState = {
 	weatherData: {},
 	showMoreInfo: false,
 	gifData: {}
@@ -13,12 +13,12 @@ let state = {
 
   // store api data
 function updatesStateWeatherData(data){
-	state.weatherData = data;
+	initialState.weatherData = data;
 }
 
 function updatesStateGifData(data) {
 	// chooce images.ourpreferredsizeimage
-	state.gifData = data.data.image_original_url;
+	initialState.gifData = data.data.image_original_url;
 }
 
 function unitConversion(state) {
@@ -97,7 +97,7 @@ function firstRender(state) {
 	const weatherData = state.weatherData;
 	const humidityData = weatherData.main.humidity;
 	const weatherDescription = weatherData.weather[0].description;
-  const currentTemp = weatherData.main.temp
+  const currentTemp = weatherData.main.temp;
 	const highTemp = weatherData.main.temp_max;
 	const lowTemp = weatherData.main.temp_min;
 	const pressure = weatherData.main.pressure;
@@ -119,20 +119,20 @@ function firstRender(state) {
 			<p>Today's current wind speed is: ${windSpeed}m/s</p>
 		</div>
   `)
+  $('.js-for-error').removeClass('hidden');
   $('.js-results').html(firstRenderTemplate);
 	$('.more-button').removeClass('hidden');
 
 }
 
 function errorRender(state) {
+	$('.js-for-error').addClass('hidden');
 	let errorRenderTemplate = (`
 		<p>Please enter valid city name and country!</p>
 		`)
 	$('.js-error').html(errorRenderTemplate)
 		.css('color', 'red')
 		.removeClass('hidden');
-
-	$('.js-more-data').addClass('hidden');
 }
 
 function rendersGif (state) {
@@ -164,15 +164,13 @@ function getApiData(cityName, callback) {
 
   $.getJSON(baseUrl, query, callback)
     .done(getGIFData(callbackGIFJson))
-		.fail(e => {errorRender(state)})
+		.fail(e => {errorRender(initialState)})
 }
 
 function callbackJson(data) {
   updatesStateWeatherData(data);
-  console.log(data);
-  unitConversion(state);
-  firstRender(state);
-	// secondRender(state);
+  unitConversion(initialState);
+  firstRender(initialState);
 	moreInfoListener();
 }
 
@@ -180,11 +178,9 @@ function callbackGIFJson(data) {
 	// update state
 	updatesStateGifData(data);
 	// render gif to DOM
-	rendersGif(state);
+	rendersGif(initialState);
 }
 
-// auto complete function
-// refactor state name to initial state
 // slides
 // style changes
 
@@ -193,21 +189,21 @@ function callbackGIFJson(data) {
 
 
 // search city submit functions
-const submitCityListener = function(state){
+const submitCityListener = function(){
 	$('#js-form').submit(function(event){
-  event.preventDefault();
-  let cityName = $('#city').val();
-  getApiData(cityName, callbackJson);
-	$('.js-error').addClass('hidden');
+	  event.preventDefault();
+	  let cityName = $('#city').val();
+	  getApiData(cityName, callbackJson);
+		$('.js-error').addClass('hidden');
 	});
 }
 
 //extra info click
-const moreInfoListener = function(state) {
+const moreInfoListener = function() {
 	$('.more-button').on('click',function(event) {
-  event.preventDefault();
-	$('.js-more-data').removeClass('hidden');
-	$('.more-button').addClass('hidden');
+	  event.preventDefault();
+		$('.js-more-data').removeClass('hidden');
+		$('.more-button').addClass('hidden');
 	});
 }
 
