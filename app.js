@@ -21,7 +21,7 @@ function updatesStateGifData(data) {
 	initialState.gifData = data.data.image_original_url;
 }
 
-function unitConversion(state) {
+function pressureAndTemperatureConversion(state) {
 	const pascalToMercury = 0.75006375541921;
   state.weatherData.main.temp = ((9/5) * (state.weatherData.main.temp - 273.15) + 32).toFixed(2);
   state.weatherData.main.temp_max = ((9/5) * (state.weatherData.main.temp_max - 273.15) + 32).toFixed(2);
@@ -31,6 +31,7 @@ function unitConversion(state) {
 
 function windConversion(state) {
 	let windDirection = state.weatherData.wind.deg;
+
 	switch(true) {
 		case windDirection < 11.25:
 			windDirection = 'N';
@@ -93,8 +94,20 @@ function windConversion(state) {
 //------ ** render functions ** ----------|
 
 
-function firstRender(state) {
+function stateRender(state) {
+	// DRY this up! (Don't Repeat Yourself). (Reduce duplication.)
+
 	const weatherData = state.weatherData;
+	// is equivalent to:
+	// const { weatherDay } = state
+	// This is called "object destructuring".
+	//
+	// const { weatherData: {
+	// 	main: {
+	// 		{ humidity, temp, temp_max, temp_min, pressure }
+	// 	}
+	// } = state
+
 	const humidityData = weatherData.main.humidity;
 	const weatherDescription = weatherData.weather[0].description;
   const currentTemp = weatherData.main.temp;
@@ -105,7 +118,7 @@ function firstRender(state) {
 	const windDirection = windConversion(state);
 	const windSpeed = weatherData.wind.speed;
 
-  let firstRenderTemplate = (`
+  let stateRenderTemplate = (`
 	  <h3>Current Temperature is: ${currentTemp}\&ordm F</h3>
 	  <h4>Today's weather description is: "${weatherDescription}"</h4>
 	  <h4>The Humidity is: ${humidityData}%</h4>
@@ -120,12 +133,18 @@ function firstRender(state) {
 		</div>
   `)
   $('.js-for-error').removeClass('hidden');
-  $('.js-results').html(firstRenderTemplate);
+  $('.js-results').html(stateRenderTemplate);
 	$('.more-button').removeClass('hidden');
 
 }
 
 function errorRender(state) {
+	// Refactor this into main render function and
+	// use state to determine whether error is showing.
+	//
+	// i.e.:
+	// state.showingError = true
+
 	$('.js-for-error').addClass('hidden');
 	let errorRenderTemplate = (`
 		<p>Please enter valid city name and country!</p>
@@ -163,27 +182,31 @@ function getApiData(cityName, callback) {
 		}
 
   $.getJSON(baseUrl, query, callback)
-    .done(getGIFData(callbackGIFJson))
+    .done(getGIFData(gifJsonToRenderPath))
 		.fail(e => {errorRender(initialState)})
 }
 
-function callbackJson(data) {
+function jsonToRenderPath(data) {
   updatesStateWeatherData(data);
-  unitConversion(initialState);
-  firstRender(initialState);
+
+	// Consider if you didn't know anything about the app,
+	// how would this read?
+  pressureAndTemperatureConversion(initialState);
+
+	// Use global find-and-replace to change function names.
+  stateRender(initialState);
+
+	// Consider setting up all listeners at the same time.
+	// Be sure to use $.on() for dynamically added elements.
 	moreInfoListener();
 }
 
-function callbackGIFJson(data) {
+function gifJsonToRenderPath(data) {
 	// update state
 	updatesStateGifData(data);
 	// render gif to DOM
 	rendersGif(initialState);
 }
-
-// slides
-// style changes
-
 
 //------ ** make event listener functions ** ----------|
 
@@ -192,9 +215,12 @@ function callbackGIFJson(data) {
 const submitCityListener = function(){
 	$('#js-form').submit(function(event){
 	  event.preventDefault();
-	  let cityName = $('#city').val();
-	  getApiData(cityName, callbackJson);
 		$('.js-error').addClass('hidden');
+
+	  let cityName = $('#city').val();
+
+		// jsonToRenderPath: More descriptive name?
+	  getApiData(cityName, jsonToRenderPath);
 	});
 }
 
@@ -202,6 +228,10 @@ const submitCityListener = function(){
 const moreInfoListener = function() {
 	$('.more-button').on('click',function(event) {
 	  event.preventDefault();
+
+		// These two lines should be based on state and
+		// handled in the render.
+		// i.e. state.showingMoreInfo = true
 		$('.js-more-data').removeClass('hidden');
 		$('.more-button').addClass('hidden');
 	});
