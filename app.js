@@ -52,20 +52,20 @@ function firstRender(state) {
 
 function secondRender(state) {
 	//Discuss as alt ways of storing our weather data
-		// const weatherData = state.weatherData;
+		const weatherData = state.weatherData;
 			// const copyData = Object.assign({}, state.weatherData);
 
 
-const highTemp = state.weatherData.main.temp_max;
-const lowTemp = state.weatherData.main.temp_min;
-const pressure = state.weatherData.main.pressure;
-const latitude = state.weatherData.coord.lat;
-const longitude = state.weatherData.coord.lon;
-const sunriseTime = state.weatherData.sys.sunrise;
-const sunsetTime = state.weatherData.sys.sunset;
-const percentCloudCover = state.weatherData.clouds.all;
-const windDirection = state.weatherData.wind.deg;
-const windSpeed = state.weatherData.wind.speed;
+const highTemp = weatherData.main.temp_max;
+const lowTemp = weatherData.main.temp_min;
+const pressure = weatherData.main.pressure;
+const latitude = weatherData.coord.lat;
+const longitude = weatherData.coord.lon;
+const sunriseTime = weatherData.sys.sunrise;
+const sunsetTime = weatherData.sys.sunset;
+const percentCloudCover = weatherData.clouds.all;
+const windDirection = weatherData.wind.deg;
+const windSpeed = weatherData.wind.speed;
 
 	let secondRenderTemplate = (`
 	<p>Today's high: ${highTemp}</p>
@@ -107,7 +107,7 @@ const windSpeed = state.weatherData.wind.speed;
     $.getJSON(baseUrl, query, callback)
     // .done(functionhere);
     // How to handle 404 error
-    	//    .fail(e => {console.log('AAAAAAA')})
+    	   // .fail(e => {console.log('AAAAAAA')})
   }
 
   function callbackJson(data) {
